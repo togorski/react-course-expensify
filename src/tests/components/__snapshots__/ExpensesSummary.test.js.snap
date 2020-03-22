@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should properly render with 0 expenses 1`] = `
+<div>
+  <p>
+    Viewing 
+    0
+     expenses totalling 
+    $0.00
+  </p>
+</div>
+`;
+
+exports[`should properly render with 0 expenses 2`] = `
+<div>
+  <p>
+    Viewing 
+    1
+     expenses totalling 
+    $0.00
+  </p>
+</div>
+`;
