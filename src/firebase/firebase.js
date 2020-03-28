@@ -24,7 +24,7 @@ export { firebase, database as default }
 
 // database.ref("expenses")
 //   .on("value", (snapshot) => {
-//     const expenses = []
+//     let expenses = []
     
 //     snapshot.forEach((childSnapshot) => {
 //         expenses.push({
