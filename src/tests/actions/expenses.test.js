@@ -1,6 +1,6 @@
 import configureMockStore from "redux-mock-store"
 import thunk from "redux-thunk"
-import { startAddExpense, addExpense, editExpense, startRemoveExpense, removeExpense, setExpenses, startSetExpenses } from "../../actions/expenses"
+import { startAddExpense, addExpense, startEditExpense, editExpense, startRemoveExpense, removeExpense, setExpenses, startSetExpenses } from "../../actions/expenses"
 import expenses from "../fixtures/expenses"
 import database from "../../firebase/firebase"
 
@@ -25,17 +25,18 @@ test("should setup remove expense action object", () => {
 
 test("should remove expense from firebase", (done) => {
     const store = createMockStore({})
+    const id = expenses[0].id
 
-    store.dispatch(startRemoveExpense({ id: expenses[0].id })).then(() => {
+    store.dispatch(startRemoveExpense({ id })).then(() => {
         const actions = store.getActions()
         expect(actions[0]).toEqual({
             type: "REMOVE_EXPENSE",
-            id: actions[0].id
+            id
         })
 
-        return database.ref(`expenses/${actions[0].id}`).once("value")
+        return database.ref(`expenses/${id}`).once("value")
     }).then((snapshot) => {
-        expect(snapshot.val()).toBe(null)
+        expect(snapshot.val()).toBeFalsy()
         done()
     })
 })
@@ -55,6 +56,37 @@ test("should setup edit expense action object", () => {
             note: "test note",
             amount: 100
         }
+    })
+})
+
+test("should edit expenses from firebase", (done) => {
+    const store = createMockStore({})
+    const id = expenses[0].id
+    const updates = {
+        amount: 666,
+        description: "test description",
+        note: "abcde"
+    }
+
+    store.dispatch(startEditExpense(id, updates)).then(() => {
+        const actions = store.getActions()
+        expect(actions[0]).toEqual({
+            id,
+            type: "EDIT_EXPENSE",
+            updates
+        })
+
+        return database.ref(`expenses/${id}`).once("value")
+    }).then((snapshot) => {
+        const { amount, createdAt, description, note } = expenses[0]
+        expect(snapshot.val()).toEqual({
+            amount,
+            createdAt,
+            description,
+            note,
+            ...updates
+        })
+        done()
     })
 })
 
